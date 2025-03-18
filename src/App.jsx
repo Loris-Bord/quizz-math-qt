@@ -2,6 +2,7 @@ import React, {useState} from "react";
 import {motion} from "framer-motion";
 import {Mistral} from '@mistralai/mistralai';
 import {FaCalculator, FaShapes, FaPuzzlePiece, FaStopwatch} from "react-icons/fa";
+import {Button} from "react-bootstrap";
 
 const categories = [
     {name: "Nombres et calculs", icon: <FaCalculator/>, color: "bg-blue-500"},
@@ -68,6 +69,10 @@ export default function App() {
             <motion.div animate={{scale: 1.1}} className="text-7xl mb-4">
                 {qtExpressions[qtExpression]}
             </motion.div>
+
+            <Button variant="secondary" onClick={checkAnswer}>
+                EH218EJ1I
+            </Button>
 
             <div className="bg-white p-4 rounded-xl shadow-lg max-w-lg mx-auto">
                 <p className="text-lg font-semibold mb-4">{problem.question}</p>
