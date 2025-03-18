@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "homepage": "https://Loris-Bord.github.io/quizz-math-qt",
+  "homepage": "https://loris-bord.github.io/quizz-math-qt",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
