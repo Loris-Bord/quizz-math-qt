@@ -23,17 +23,17 @@ export default function App() {
     const [feedback, setFeedback] = useState("");
     const [problem, setProblem] = useState({question: "Chargement de la question...", answer: ""});
 
-    const apiKey = "nb4MJUeueYbZKVuqEb6If90ZNzRqCb1h";
+    const apiKey = "6xk1gvqX1Vt8nihvZdzcXKkx0T10tcIl";
 
     const client = new Mistral({apiKey: apiKey});
 
 
     const generateProblem = async () => {
         const chatResponse = await client.chat.complete({
-            model: "codestral-latest",
+            model: "mistral-small",
             messages: [{
                 role: "user",
-                content: "Génère un nouveau problème simple de mathématiques pour enfant d'un niveau maximum de CE2 et donne la réponse. Formule la réponse comme ceci :\n" + "Problème : énoncé du problème\n" + "Réponse : réponse numérique"
+                content: "Génère un nouveau problème unique simple de mathématiques en français pour enfant d'un niveau maximum de CE2 et donne la réponse. Formule la réponse comme ceci :\n" + "Problème : énoncé du problème\n" + "Réponse : réponse numérique seule, sans justification"
             }],
         })
 
