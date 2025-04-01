@@ -2,7 +2,7 @@ import React from "react";
 import {Card, Col, Container, Row} from "react-bootstrap";
 
 
-export default function SalEnculer({handleChoiceGame}) {
+export default function GameChoice({handleChoiceGame}) {
     return (
         <Container fluid className="text-center" style={{
             padding: "1rem",
