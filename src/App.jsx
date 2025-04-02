@@ -24,6 +24,7 @@ const qtExpressions = {
 export default function App() {
     const [qtExpression, setQtExpression] = useState("neutral");
     const [correctAnswer, setCorrectAnswer] = useState("");
+    const [feedback, setFeedback] = useState("");
 
     const [isMultipleChoice, setIsMultipleChoice] = useState(false);
     const [multipleChoices, setMultipleChoices] = useState([]);
@@ -42,9 +43,12 @@ export default function App() {
     const checkAnswer = async (answer) => {
         const isCorrect = correctAnswer.toLowerCase().includes(answer);
         console.log(`Réponse correcte : ${isCorrect}`);
-        nextProblem();
+        if (isCorrect) nextProblem();
         //setQtExpression(isCorrect ? "happy" : "sad");
-        //setFeedback(isCorrect ? "Correct !" : "Non !!!")
+        setFeedback(isCorrect ? "Correct !" : "Non !!!")
+        setTimeout(() => {
+            setFeedback("")
+        }, 2000)
     };
 
     return (
@@ -88,7 +92,7 @@ export default function App() {
                     flex: 1,
                     overflow: "hidden"
                 }}>
-                    <DialogBox gameIndex={selected} newProblem={idProblem} setIsMultipleChoice={setIsMultipleChoice} setMultiplesChoices={setMultipleChoices} setCorrectAnswer={setCorrectAnswer}/>
+                    <DialogBox gameIndex={selected} newProblem={idProblem} setIsMultipleChoice={setIsMultipleChoice} setMultiplesChoices={setMultipleChoices} setCorrectAnswer={setCorrectAnswer} feedback={feedback} />
                     <img src={robotImage} alt="Robot QT"
                          style={{
                              position: "absolute",

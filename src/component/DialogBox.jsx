@@ -18,10 +18,11 @@ const prompts = {
  * @param setMultiplesChoices
  * @param setCorrectAnswer
  * @param newProblem
+ * @param feedback
  * @returns {Element}
  * @constructor
  */
-export default function DialogBox ({gameIndex, setIsMultipleChoice, setMultiplesChoices, setCorrectAnswer, newProblem}) {
+export default function DialogBox ({gameIndex, setIsMultipleChoice, setMultiplesChoices, setCorrectAnswer, newProblem, feedback}) {
     const [problem, setProblem] = useState("");
 
     const apiKey = "6xk1gvqX1Vt8nihvZdzcXKkx0T10tcIl";
@@ -74,12 +75,20 @@ export default function DialogBox ({gameIndex, setIsMultipleChoice, setMultiples
             padding: "5rem 2rem",
             borderRadius: "15px",
             boxShadow: "2px 2px 10px rgba(0,0,0,0.3)",
-            fontSize: "2rem",
+            width: "50vh",
+            height: "20vh",
+            fontSize: "clamp(1rem, 1.0vw, 1.5rem)",
             fontWeight: "bold",
             textAlign: "center",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            wordWrap: "break-word",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
             zIndex: "1",
         }}>
-            {problem}
+            {feedback !== "" ? feedback : problem}
         </div>
     );
 
