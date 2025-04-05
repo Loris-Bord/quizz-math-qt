@@ -2,7 +2,16 @@ import React, {useState} from "react";
 import {Container, Nav, Navbar} from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 
-import robotImage from "./assets/qtrobot.png";
+import qtBase from "./assets/qtrobot.png";
+import qtThink from "./assets/qtrobot_think.png";
+import qtNatural from "./assets/qtrobot_natural.png";
+
+import qtHappy from "./assets/qtrobot_happy.png";
+import qtVeryHappy from "./assets/qtrobot_very_happy.png";
+
+import qtSad from "./assets/qtrobot_sad.png";
+import qtCry from "./assets/qtrobot_cry.png";
+
 import GameChoice from "./component/GameChoice.jsx";
 import ResponseBox from "./component/ResponseBox.jsx";
 import DialogBox from "./component/DialogBox.jsx";
@@ -15,14 +24,11 @@ const categories = [
     {name: "Jeux", color: "#ff8800"},
 ];
 
-const qtExpressions = {
-    neutral: "😀",
-    happy: "😃",
-    sad: "😢",
-};
+const sadExpressions = [qtSad, qtCry]
+const happyExpressions = [qtHappy, qtVeryHappy]
 
 export default function App() {
-    const [qtExpression, setQtExpression] = useState("neutral");
+    const [qtExpression, setQtExpression] = useState(qtBase);
     const [correctAnswer, setCorrectAnswer] = useState("");
     const [feedback, setFeedback] = useState("");
 
@@ -33,22 +39,52 @@ export default function App() {
 
     const [selected, setSelected] = useState("0");
 
-    const nextProblem = () => setIdProblem(idProblem+1);
+    const problemGenerated = (answer) => {
+        setCorrectAnswer(answer)
+        if (feedback === "") {
+            setQtExpression(qtNatural)
+        }
+    };
+
+    const nextProblem = (gameIndex, changeExpression = true) => {
+        setIdProblem(idProblem + 1);
+        if (changeExpression) {
+            if (gameIndex === "0") setQtExpression(qtBase)
+            else setQtExpression(qtThink);
+        }
+    };
 
     function choiceGame(gameIndex) {
         setSelected(gameIndex)
-        nextProblem();
+        nextProblem(gameIndex);
+    }
+
+    function cleanText(str) {
+        if (selected === "1") {
+            return Number(str)
+        } else
+            return str
+                .toLowerCase()
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, '')
+                .replace(/\b(un|une|le|la|les|du|de|des|l’|l')\b/g, '')
+                .replace(/[^a-z0-9]/g, '')
+                .trim();
     }
 
     const checkAnswer = async (answer) => {
-        const isCorrect = correctAnswer.toLowerCase().includes(answer);
+        const isCorrect = cleanText(correctAnswer) === cleanText(answer)
         console.log(`Réponse correcte : ${isCorrect}`);
-        if (isCorrect) nextProblem();
-        //setQtExpression(isCorrect ? "happy" : "sad");
-        setFeedback(isCorrect ? "Correct !" : "Non !!!")
+        if (isCorrect) {
+            nextProblem(selected, false);
+            setQtExpression(happyExpressions[Math.floor(Math.random() * happyExpressions.length)])
+        } else setQtExpression(sadExpressions[Math.floor(Math.random() * sadExpressions.length)]);
+
+        setFeedback(isCorrect ? "TRUE" : "FALSE")
         setTimeout(() => {
             setFeedback("")
-        }, 2000)
+            setQtExpression(qtNatural)
+        }, 2500)
     };
 
     return (
@@ -92,8 +128,10 @@ export default function App() {
                     flex: 1,
                     overflow: "hidden"
                 }}>
-                    <DialogBox gameIndex={selected} newProblem={idProblem} setIsMultipleChoice={setIsMultipleChoice} setMultiplesChoices={setMultipleChoices} setCorrectAnswer={setCorrectAnswer} feedback={feedback} />
-                    <img src={robotImage} alt="Robot QT"
+                    <DialogBox gameIndex={selected} newProblem={idProblem} setIsMultipleChoice={setIsMultipleChoice}
+                               setMultiplesChoices={setMultipleChoices} setCorrectAnswer={problemGenerated}
+                               feedback={feedback}/>
+                    <img src={qtExpression} alt="Robot QT"
                          style={{
                              position: "absolute",
                              left: "53%",

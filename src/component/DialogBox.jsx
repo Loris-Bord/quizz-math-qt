@@ -1,13 +1,38 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useRef} from 'react';
 import {useState} from "react";
 import {Mistral} from "@mistralai/mistralai";
 
 
 const prompts = {
     "0": "",
-    "1": "Génère moi une opération simple de mathématiques (addition, soustraction, multiplication ou division) en français sous la forme (n opération n) pour enfant d'un niveau maximum de CE2 et donne la réponse. Formule la réponse comme ceci :\n" + "Problème : énoncé du calcul\n" + "Réponse : réponse numérique seule, sans justification",
-    "2": "Génère une question sur la géométrie en français pour enfant d'un niveau maximum de CE2 et donne la réponse. Formule la réponse comme ceci :\n" + "Problème : énoncé du problème\n" + "Réponse : réponse numérique seule, sans justification",
-    "3": "Génère un nouveau problème unique simple de mathématiques en français pour enfant d'un niveau maximum de CE2 et donne la réponse. Formule la réponse comme ceci :\n" + "Problème : énoncé du problème\n" + "Réponse : réponse numérique seule, sans justification",
+    "1": `Génère une **nouvelle opération de mathématiques différente** à chaque fois pour un élève de CE2. Varie les nombres et les opérateurs (+, -, ×), utilise des nombres inférieurs à 50, pour les multiplications utilise seulement des nombres inférieurs à 10, ne fait pas de division, sans jamais répéter un exercice déjà généré. 
+            Retourne uniquement le texte sous ce format EXACT :
+
+            Problème : [énoncé du calcul sous forme "n opération n"]
+            Réponse : [réponse numérique]
+            GoodResponse : [petite phrase d'encouragement si l'enfant a réussi]
+            BadResponse : [petite phrase d'encouragement si l'enfant s'est trompé, ne donne pas la réponse]
+            
+            Ne génère **qu’un seul** exercice.`,
+
+    "2": `Génère une **nouvelle question sur la géométrie en français différente à chaque fois** pour enfant d'un niveau maximum de CE2.
+            Retourne uniquement le texte sous ce format EXACT :
+            
+            Problème : [énoncé]
+            Réponse : [réponse en un seul mot]
+            GoodResponse : [petite phrase d'encouragement si l'enfant a réussi]
+            BadResponse : [petite phrase d'encouragement si l'enfant s'est trompé,ne donne pas la réponse]
+            
+            Ne génère **qu’un seul** exercice.`,
+    "3": `Génère un **nouveau problème différent à chaque fois** simple de mathématiques en français pour enfant d'un niveau maximum de CE2, le problème doit contenir **une petite mise en situation réaliste** (avec une phrase ou deux), et se terminer par une question. 
+            Retourne uniquement le texte sous ce format EXACT :
+            
+            Problème : [énoncé du problème]
+            Réponse : [réponse numérique]
+            GoodResponse : [petite phrase d'encouragement si l'enfant a réussi]
+            BadResponse : [petite phrase d'encouragement si l'enfant s'est trompé,ne donne pas la réponse]
+            
+            Ne génère **qu’un seul** exercice.`,
     "4": ""
 }
 
@@ -22,48 +47,93 @@ const prompts = {
  * @returns {Element}
  * @constructor
  */
-export default function DialogBox ({gameIndex, setIsMultipleChoice, setMultiplesChoices, setCorrectAnswer, newProblem, feedback}) {
+export default function DialogBox({
+                                      gameIndex,
+                                      setIsMultipleChoice,
+                                      setMultiplesChoices,
+                                      setCorrectAnswer,
+                                      newProblem,
+                                      feedback,
+                                  }) {
     const [problem, setProblem] = useState("");
+    const [goodResponse, setGoodResponse] = useState("");
+    const [badResponse, setBadResponse] = useState("");
+
+    const [tempGoodResponse, setTempGoodResponse] = useState("");
+    const [tempBadResponse, setTempBadResponse] = useState("");
 
     const apiKey = "6xk1gvqX1Vt8nihvZdzcXKkx0T10tcIl";
 
     const client = new Mistral({apiKey: apiKey});
 
+    const chatHistory = useRef([
+        {
+            role: "system",
+            content: "Tu es un générateur d'exercices pour des enfants de CE2. Ne répète jamais un problème déjà généré."
+        }
+    ]);
+
     useEffect(() => {
         generateProblem().then();
     }, [newProblem])
 
+    useEffect(() => {
+        if (feedback === "") {
+            setGoodResponse(tempGoodResponse);
+            setBadResponse(tempBadResponse);
+        }
+    }, [feedback]);
+
     const generateProblem = async () => {
         setProblem("...")
         if (gameIndex !== "0") {
+
+            chatHistory.current.push({
+                role: "user",
+                content: prompts[gameIndex]
+            })
+
             const chatResponse = await client.chat.complete({
                 model: "mistral-small",
-                messages: [{
-                    role: "user",
-                    content: prompts[gameIndex]
-                }]
+                messages: chatHistory.current,
+                temperature: 0.9,
+                top_p: 0.95
             })
 
             const generatedText = chatResponse.choices[0].message.content;
 
-            const enonce = generatedText.split("Problème :")[1];
+            // Enregistrement de la réponse de Mistral pour qu'il se souvienne de ce qu'il à dit
+            chatHistory.current.push({
+                role: "assistant",
+                content: generatedText
+            });
 
-            const [question, answer] = enonce.split("Réponse :");
+            const lignes = generatedText
+                .split('\n')
+                .filter(line => line.trim() !== '')
+                .map(line => line.split(':').slice(1).join(':').trim());
 
-            console.log(`Question : ${question} \n Réponse : ${answer}`);
+            console.log(lignes)
+
+            const [question, answer, goodAnswer, badAnswer] = lignes;
+
 
             setProblem(question.trim());
             setCorrectAnswer(answer.trim());
-            /*
-            setQtExpression("neutral");
-            setFeedback("");
-            setUserAnswer("");
 
-             */
+            if (goodResponse === "") {
+                setGoodResponse(goodAnswer);
+                setBadResponse(badAnswer);
+            }
+
+            setTempGoodResponse(goodAnswer);
+            setTempBadResponse(badAnswer);
         } else {
             setProblem("Apprends les Maths avec QT !")
         }
     };
+
+
 
     return (
         <div style={{
@@ -88,8 +158,7 @@ export default function DialogBox ({gameIndex, setIsMultipleChoice, setMultiples
             textOverflow: "ellipsis",
             zIndex: "1",
         }}>
-            {feedback !== "" ? feedback : problem}
+            {feedback !== "" ? feedback === "TRUE" ? goodResponse : badResponse : problem}
         </div>
     );
-
 }
