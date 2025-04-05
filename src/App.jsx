@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {Container, Nav, Navbar} from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 
@@ -39,6 +39,80 @@ export default function App() {
 
     const [selected, setSelected] = useState("0");
 
+    /* Pour le jeux chronométré */
+    const [timer, setTimer] = useState(10);
+    const [score, setScore] = useState(0);
+    const [questionCount, setQuestionCount] = useState(0);
+    const [gameEnded, setGameEnded] = useState(false);
+    const [isTimedGame, setIsTimedGame] = useState(false)
+    const [nbQuestion, setNbQuestions] = useState(4)
+    const [answerHistory, setAnswerHistory] = useState(Array(nbQuestion).fill("neutral"));
+    const [timerPaused, setTimerPaused] = useState(false);
+
+    useEffect(() => {
+        if (selected === "4" && questionCount < nbQuestion && !gameEnded && !timerPaused) {
+            const interval = setInterval(() => {
+                setTimer(prev => {
+                    if (prev === 1) {
+                        clearInterval(interval);
+                        handleTimeout();
+                        return 10;
+                    }
+                    return prev - 1;
+                });
+            }, 1000);
+            return () => clearInterval(interval);
+        }
+    }, [idProblem, selected, gameEnded, timerPaused]);
+
+    useEffect(() => {
+        if (selected === '4') setIsTimedGame(true)
+        else setIsTimedGame(false)
+    }, [selected]);
+
+    useEffect(() => {
+        if (questionCount === nbQuestion) setGameEnded(true);
+    }, [questionCount]);
+
+    useEffect(() => {
+        if (gameEnded) {
+            handleQtExpressionByScore(score)
+        }
+    }, [gameEnded]);
+
+    function handleQtExpressionByScore(score) {
+        console.log(qtExpression)
+        if (score === 0) {
+            setQtExpression(qtCry);
+        } else if (score > 0 && score < 0.5 * nbQuestion) {
+            setQtExpression(qtSad);
+        } else if (score >= 0.5 * nbQuestion && score < 0.75 * nbQuestion) {
+            setQtExpression(qtHappy);
+        } else if (score >= 0.75 * nbQuestion) {
+            setQtExpression(qtVeryHappy);
+        }
+    }
+
+    const handleTimeout = () => {
+        setQtExpression(qtSad);
+        setFeedback("FALSE");
+        setAnswerHistory(prev => {
+            const updated = [...prev];
+            updated[questionCount] = "wrong";
+            return updated;
+        });
+        setTimeout(() => {
+            setFeedback("");
+            setQtExpression(qtNatural);
+
+            setIdProblem(prev => prev + 1);
+            setQuestionCount(prev => prev + 1);
+            setTimer(10);
+
+        }, 2000);
+    };
+
+
     const problemGenerated = (answer) => {
         setCorrectAnswer(answer)
         if (feedback === "") {
@@ -56,6 +130,13 @@ export default function App() {
 
     function choiceGame(gameIndex) {
         setSelected(gameIndex)
+        if (gameIndex === '4') {
+            setQuestionCount(0);
+            setScore(0);
+            setTimer(10);
+            setAnswerHistory(Array(nbQuestion).fill("neutral"))
+        }
+        setGameEnded(false);
         nextProblem(gameIndex);
     }
 
@@ -73,17 +154,39 @@ export default function App() {
     }
 
     const checkAnswer = async (answer) => {
+        setTimerPaused(true);
         const isCorrect = cleanText(correctAnswer) === cleanText(answer)
         console.log(`Réponse correcte : ${isCorrect}`);
+
         if (isCorrect) {
+            if (isTimedGame) setScore(prev => prev + 1)
             nextProblem(selected, false);
             setQtExpression(happyExpressions[Math.floor(Math.random() * happyExpressions.length)])
         } else setQtExpression(sadExpressions[Math.floor(Math.random() * sadExpressions.length)]);
 
+        if (isTimedGame) {
+            setAnswerHistory(prev => {
+                const updated = [...prev];
+                updated[questionCount] = isCorrect ? "correct" : "wrong";
+                return updated;
+            });
+
+        }
+
         setFeedback(isCorrect ? "TRUE" : "FALSE")
         setTimeout(() => {
             setFeedback("")
-            setQtExpression(qtNatural)
+            if (!gameEnded) setQtExpression(qtNatural)
+            if (selected === "4") {
+                if (questionCount + 1 >= nbQuestion) {
+                    setGameEnded(true);
+                } else {
+                    setIdProblem(prev => prev + 1);
+                    setQuestionCount(prev => prev + 1);
+                    setTimer(10);
+                }
+                setTimerPaused(false)
+            }
         }, 2500)
     };
 
@@ -113,7 +216,7 @@ export default function App() {
                         <Nav.Link eventKey="1" className="fw-bold text-center fs-3">Calculs</Nav.Link>
                         <Nav.Link eventKey="2" className="fw-bold text-center fs-3">Géométrie</Nav.Link>
                         <Nav.Link eventKey="3" className="fw-bold text-center fs-3">Problèmes</Nav.Link>
-                        <Nav.Link eventKey="4" className="fw-bold text-center fs-3">Jeux</Nav.Link>
+                        <Nav.Link eventKey="4" className="fw-bold text-center fs-3">Jeux chrono</Nav.Link>
                     </Nav>
                 </Container>
             </Navbar>
@@ -130,7 +233,48 @@ export default function App() {
                 }}>
                     <DialogBox gameIndex={selected} newProblem={idProblem} setIsMultipleChoice={setIsMultipleChoice}
                                setMultiplesChoices={setMultipleChoices} setCorrectAnswer={problemGenerated}
-                               feedback={feedback}/>
+                               feedback={feedback} timer={timer}
+                               onTimeout={handleTimeout}
+                               isTimedGame={isTimedGame}
+                               gameEnded={gameEnded}
+                               score={score}
+                               nbQuestion={nbQuestion}/>
+
+                    {selected === "4" && !gameEnded && (
+                        <div style={{
+                            position: "absolute",
+                            top: "1rem",
+                            right: "2rem",
+                            fontSize: "2rem",
+                            fontWeight: "bold"
+                        }}>
+                            ⏱️ {timer}s
+                        </div>
+                    )}
+
+                    {selected === "4" && (
+                        <div style={{
+                            position: "absolute",
+                            top: "6rem",
+                            right: "2rem",
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: "0.5rem"
+                        }}>
+                            {answerHistory.map((status, index) => (
+                                <div key={index} style={{
+                                    width: "20px",
+                                    height: "20px",
+                                    borderRadius: "50%",
+                                    backgroundColor:
+                                        status === "correct" ? "green" :
+                                            status === "wrong" ? "red" : "lightgray"
+                                }}/>
+                            ))}
+                        </div>
+                    )}
+
+
                     <img src={qtExpression} alt="Robot QT"
                          style={{
                              position: "absolute",

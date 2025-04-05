@@ -54,6 +54,13 @@ export default function DialogBox({
                                       setCorrectAnswer,
                                       newProblem,
                                       feedback,
+                                      timer,
+                                      onTimeout,
+                                      gameEnded,
+                                      isTimedGame,
+                                      score,
+                                      nbQuestion
+
                                   }) {
     const [problem, setProblem] = useState("");
     const [goodResponse, setGoodResponse] = useState("");
@@ -84,13 +91,19 @@ export default function DialogBox({
         }
     }, [feedback]);
 
+    useEffect(() => {
+        if (timer === 0) {
+            onTimeout();
+        }
+    }, [timer, onTimeout]);
+
     const generateProblem = async () => {
         setProblem("...")
         if (gameIndex !== "0") {
 
             chatHistory.current.push({
                 role: "user",
-                content: prompts[gameIndex]
+                content: isTimedGame ? prompts[Math.floor(Math.random() * 3) + 1] : prompts[gameIndex]
             })
 
             const chatResponse = await client.chat.complete({
@@ -134,7 +147,6 @@ export default function DialogBox({
     };
 
 
-
     return (
         <div style={{
             position: "absolute",
@@ -158,7 +170,7 @@ export default function DialogBox({
             textOverflow: "ellipsis",
             zIndex: "1",
         }}>
-            {feedback !== "" ? feedback === "TRUE" ? goodResponse : badResponse : problem}
+            {(isTimedGame && gameEnded) ? `Le jeu est fini, ton score est de : ${score}/${nbQuestion}` : feedback !== "" ? feedback === "TRUE" ? goodResponse : badResponse : problem}
         </div>
     );
 }
