@@ -106,6 +106,8 @@ export default function DialogBox({
                 content: isTimedGame ? prompts[Math.floor(Math.random() * 3) + 1] : prompts[gameIndex]
             })
 
+            console.log(Math.floor(Math.random() * 3) + 1)
+
             const chatResponse = await client.chat.complete({
                 model: "mistral-small",
                 messages: chatHistory.current,

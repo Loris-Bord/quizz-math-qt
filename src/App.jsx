@@ -154,7 +154,7 @@ export default function App() {
     }
 
     const checkAnswer = async (answer) => {
-        setTimerPaused(true);
+        if (isTimedGame) setTimerPaused(true);
         const isCorrect = cleanText(correctAnswer) === cleanText(answer)
         console.log(`Réponse correcte : ${isCorrect}`);
 
@@ -288,7 +288,7 @@ export default function App() {
 
                 {selected === "0" ? <GameChoice handleChoiceGame={choiceGame}/> :
                     <ResponseBox isMultipleChoice={isMultipleChoice} multiplesChoices={multipleChoices}
-                                 handlerChoice={checkAnswer}/>}
+                                 handlerChoice={checkAnswer} feedback={feedback}/>}
             </div>
         </div>
     );

@@ -2,7 +2,7 @@ import React from 'react';
 import {Button, Form} from "react-bootstrap";
 
 
-export default function ResponseBox({isMultipleChoice, multiplesChoices, handlerChoice}) {
+export default function ResponseBox({isMultipleChoice, multiplesChoices, handlerChoice, feedback}) {
     const [response, setResponse] = React.useState("");
 
     return (
@@ -26,6 +26,7 @@ export default function ResponseBox({isMultipleChoice, multiplesChoices, handler
                         placeholder={""}
                         className="border border-primary shadow-sm bg-white"
                         style={{ height: "10vh"}}
+                        disabled={feedback !== ''}
                     />
                     <Button type="submit" hidden></Button>
                 </Form>
