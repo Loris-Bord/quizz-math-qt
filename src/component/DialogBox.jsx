@@ -148,6 +148,39 @@ export default function DialogBox({
         }
     };
 
+    useEffect(() => {
+        let textToSpeak = "";
+
+        if (isTimedGame && gameEnded) {
+            textToSpeak = `Le jeu est terminé. Tu as eu ${score} bonnes réponses sur ${nbQuestion}. Bravo !`;
+        } else if (feedback !== "") {
+            textToSpeak = feedback === "TRUE" ? goodResponse : badResponse;
+        } else {
+            textToSpeak = problem;
+        }
+
+        if (textToSpeak) {
+            const utterance = new SpeechSynthesisUtterance(textToSpeak);
+            utterance.lang = 'fr-FR';
+            const voices = speechSynthesis.getVoices();
+            const robotVoice = voices.find(voice =>
+                    voice.lang === 'fr-FR' && (
+                        voice.name.toLowerCase().includes("google") ||
+                        voice.name.toLowerCase().includes("hortense") ||
+                        voice.name.toLowerCase().includes("amelie") ||
+                        voice.name.toLowerCase().includes("thomas") ||
+                        voice.name.toLowerCase().includes("auguste")
+                    )
+            );
+            if (robotVoice) {
+                utterance.voice = robotVoice;
+            }
+
+            speechSynthesis.cancel();
+            speechSynthesis.speak(utterance);
+        }
+    }, [problem, goodResponse, badResponse, feedback, isTimedGame, gameEnded, score, nbQuestion]);
+
 
     return (
         <div style={{
