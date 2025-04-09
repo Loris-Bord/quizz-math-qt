@@ -49,6 +49,7 @@ export default function App() {
     const [answerHistory, setAnswerHistory] = useState(Array(nbQuestion).fill("neutral"));
     const [timerPaused, setTimerPaused] = useState(false);
 
+
     useEffect(() => {
         if (selected === "4" && questionCount < nbQuestion && !gameEnded && !timerPaused) {
             const interval = setInterval(() => {
@@ -56,7 +57,7 @@ export default function App() {
                     if (prev === 1) {
                         clearInterval(interval);
                         handleTimeout();
-                        return 10;
+                        return 30;
                     }
                     return prev - 1;
                 });
@@ -133,7 +134,7 @@ export default function App() {
         if (gameIndex === '4') {
             setQuestionCount(0);
             setScore(0);
-            setTimer(10);
+            setTimer(30);
             setAnswerHistory(Array(nbQuestion).fill("neutral"))
         }
         setGameEnded(false);
@@ -181,9 +182,9 @@ export default function App() {
                 if (questionCount + 1 >= nbQuestion) {
                     setGameEnded(true);
                 } else {
-                    setIdProblem(prev => prev + 1);
+                    //setIdProblem(prev => prev + 1); Ligne qui pose un problème de double refresh Loris :(
                     setQuestionCount(prev => prev + 1);
-                    setTimer(10);
+                    setTimer(30);
                 }
                 setTimerPaused(false)
             }

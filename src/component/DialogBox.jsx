@@ -19,7 +19,7 @@ const prompts = {
             Retourne uniquement le texte sous ce format EXACT :
             
             Problème : [énoncé]
-            Réponse : [réponse en un seul mot]
+            Réponse : [réponse en un seul mot, si la réponse est un chiffre en lettres comme 'quatre' met directement '4']
             GoodResponse : [petite phrase d'encouragement si l'enfant a réussi]
             BadResponse : [petite phrase d'encouragement si l'enfant s'est trompé,ne donne pas la réponse]
             
@@ -29,6 +29,42 @@ const prompts = {
             
             Problème : [énoncé du problème]
             Réponse : [réponse numérique]
+            GoodResponse : [petite phrase d'encouragement si l'enfant a réussi]
+            BadResponse : [petite phrase d'encouragement si l'enfant s'est trompé,ne donne pas la réponse]
+            
+            Ne génère **qu’un seul** exercice.`,
+    "4": ""
+}
+
+const promptsMultipleChoice = {
+    "0": "",
+    "1": `Génère une **nouvelle opération de mathématiques différente** à chaque fois pour un élève de CE2. Varie les nombres et les opérateurs (+, -, ×), utilise des nombres inférieurs à 50, pour les multiplications utilise seulement des nombres inférieurs à 10, ne fait pas de division, sans jamais répéter un exercice déjà généré. 
+            Retourne uniquement le texte sous ce format EXACT de choix multiple :
+
+            Problème : [énoncé du calcul sous forme "n opération n"]
+            Réponse : [réponse numérique correcte]
+            Choix : [réponse numérique 1, réponse numérique 2, réponse numérique 3, réponse numérique 4]
+            GoodResponse : [petite phrase d'encouragement si l'enfant a réussi]
+            BadResponse : [petite phrase d'encouragement si l'enfant s'est trompé, ne donne pas la réponse]
+            
+            Ne génère **qu’un seul** exercice.`,
+
+    "2": `Génère une **nouvelle question sur la géométrie en français différente à chaque fois** pour enfant d'un niveau maximum de CE2.
+            Retourne uniquement le texte sous ce format EXACT de choix multiple :
+            
+            Problème : [énoncé]
+            Réponse : [réponse en un seul mot correcte, si la réponse est un chiffre en lettres comme 'quatre' met directement '4']
+            Choix : [réponse en un seul mot 1, réponse en un seul mot 2, réponse en un seul mot 3, réponse en un seul mot 4]
+            GoodResponse : [petite phrase d'encouragement si l'enfant a réussi]
+            BadResponse : [petite phrase d'encouragement si l'enfant s'est trompé,ne donne pas la réponse]
+            
+            Ne génère **qu’un seul** exercice.`,
+    "3": `Génère un **nouveau problème différent à chaque fois** simple de mathématiques en français pour enfant d'un niveau maximum de CE2, le problème doit contenir **une petite mise en situation réaliste** (avec une phrase ou deux), et se terminer par une question. 
+            Retourne uniquement le texte sous ce format EXACT de choix multiple :
+            
+            Problème : [énoncé du problème]
+            Réponse : [réponse numérique correcte]
+            Choix : [réponse numérique 1, réponse numérique 2, réponse numérique 3, réponse numérique 4]
             GoodResponse : [petite phrase d'encouragement si l'enfant a réussi]
             BadResponse : [petite phrase d'encouragement si l'enfant s'est trompé,ne donne pas la réponse]
             
@@ -81,7 +117,7 @@ export default function DialogBox({
     ]);
 
     useEffect(() => {
-        generateProblem().then();
+        generateProblem(newProblem%4 === 0).then();
     }, [newProblem])
 
     useEffect(() => {
@@ -97,16 +133,16 @@ export default function DialogBox({
         }
     }, [timer, onTimeout]);
 
-    const generateProblem = async () => {
+    const generateProblem = async (multipleChoice) => {
         setProblem("...")
         if (gameIndex !== "0") {
 
+            const promptsToUse = multipleChoice ? promptsMultipleChoice : prompts;
+
             chatHistory.current.push({
                 role: "user",
-                content: isTimedGame ? prompts[Math.floor(Math.random() * 3) + 1] : prompts[gameIndex]
+                content: isTimedGame ? promptsToUse[Math.floor(Math.random() * 3) + 1] : promptsToUse[gameIndex]
             })
-
-            console.log(Math.floor(Math.random() * 3) + 1)
 
             const chatResponse = await client.chat.complete({
                 model: "mistral-small",
@@ -130,9 +166,18 @@ export default function DialogBox({
 
             console.log(lignes)
 
-            const [question, answer, goodAnswer, badAnswer] = lignes;
+            let question, answer,goodAnswer, badAnswer;
 
+            if (multipleChoice) {
+                let choices;
+                [question, answer, choices, goodAnswer, badAnswer] = lignes;
+                choices = choices.split(",");
+                setMultiplesChoices(choices);
+            } else {
+                [question, answer, goodAnswer, badAnswer] = lignes;
+            }
 
+            setIsMultipleChoice(multipleChoice)
             setProblem(question.trim());
             setCorrectAnswer(answer.trim());
 
@@ -149,7 +194,7 @@ export default function DialogBox({
     };
 
     useEffect(() => {
-        let textToSpeak = "";
+        let textToSpeak;
 
         if (isTimedGame && gameEnded) {
             textToSpeak = `Le jeu est terminé. Tu as eu ${score} bonnes réponses sur ${nbQuestion}. Bravo !`;
