@@ -80,6 +80,13 @@ const promptsMultipleChoice = {
  * @param setCorrectAnswer
  * @param newProblem
  * @param feedback
+ * @param timer
+ * @param onTimeout
+ * @param gameEnded
+ * @param isTimedGame
+ * @param score
+ * @param nbQuestion
+ * @param onSpeechFinished
  * @returns {Element}
  * @constructor
  */
@@ -95,7 +102,8 @@ export default function DialogBox({
                                       gameEnded,
                                       isTimedGame,
                                       score,
-                                      nbQuestion
+                                      nbQuestion,
+                                      onSpeechFinished
 
                                   }) {
     const [problem, setProblem] = useState("");
@@ -104,6 +112,8 @@ export default function DialogBox({
 
     const [tempGoodResponse, setTempGoodResponse] = useState("");
     const [tempBadResponse, setTempBadResponse] = useState("");
+
+    const [responseRobotFinished, setResponseRobotFinished] = useState(false);
 
     const apiKey = "6xk1gvqX1Vt8nihvZdzcXKkx0T10tcIl";
 
@@ -117,7 +127,7 @@ export default function DialogBox({
     ]);
 
     useEffect(() => {
-        generateProblem(newProblem%4 === 0).then();
+        generateProblem(newProblem % 4 === 0).then();
     }, [newProblem])
 
     useEffect(() => {
@@ -166,7 +176,7 @@ export default function DialogBox({
 
             console.log(lignes)
 
-            let question, answer,goodAnswer, badAnswer;
+            let question, answer, goodAnswer, badAnswer;
 
             if (multipleChoice) {
                 let choices;
@@ -181,10 +191,10 @@ export default function DialogBox({
             setProblem(question.trim());
             setCorrectAnswer(answer.trim());
 
-            if (goodResponse === "") {
-                setGoodResponse(goodAnswer);
-                setBadResponse(badAnswer);
-            }
+
+            setGoodResponse(goodAnswer);
+            setBadResponse(badAnswer);
+
 
             setTempGoodResponse(goodAnswer);
             setTempBadResponse(badAnswer);
@@ -220,6 +230,15 @@ export default function DialogBox({
             if (robotVoice) {
                 utterance.voice = robotVoice;
             }
+
+            utterance.onend = () => {
+                if (feedback !== "") {
+                    setTimeout(() => {
+                        setResponseRobotFinished(true);
+                        onSpeechFinished()
+                    }, 300);
+                }
+            };
 
             speechSynthesis.cancel();
             speechSynthesis.speak(utterance);

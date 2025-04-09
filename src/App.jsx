@@ -40,7 +40,7 @@ export default function App() {
     const [selected, setSelected] = useState("0");
 
     /* Pour le jeux chronométré */
-    const [timer, setTimer] = useState(10);
+    const [timer, setTimer] = useState(30);
     const [score, setScore] = useState(0);
     const [questionCount, setQuestionCount] = useState(0);
     const [gameEnded, setGameEnded] = useState(false);
@@ -69,6 +69,7 @@ export default function App() {
     useEffect(() => {
         if (selected === '4') setIsTimedGame(true)
         else setIsTimedGame(false)
+        setFeedback("");
     }, [selected]);
 
     useEffect(() => {
@@ -108,9 +109,9 @@ export default function App() {
 
             setIdProblem(prev => prev + 1);
             setQuestionCount(prev => prev + 1);
-            setTimer(10);
+            setTimer(30);
 
-        }, 2000);
+        }, 3000);
     };
 
 
@@ -154,6 +155,26 @@ export default function App() {
                 .trim();
     }
 
+    const handleSpeechFinished = () => {
+        setQtExpression(qtNatural);
+
+        if (selected === "4") { // Jeu chrono
+            if (questionCount + 1 >= nbQuestion) {
+                setGameEnded(true);
+            } else {
+                setQuestionCount(prev => prev + 1);
+                setTimer(30);
+            }
+            setTimerPaused(false);
+            nextProblem(selected, false);
+        } else {
+            if (feedback === "TRUE") {
+                nextProblem(selected, false);
+            }
+        }
+        setFeedback("");
+    };
+
     const checkAnswer = async (answer) => {
         if (isTimedGame) setTimerPaused(true);
         const isCorrect = cleanText(correctAnswer) === cleanText(answer)
@@ -161,7 +182,7 @@ export default function App() {
 
         if (isCorrect) {
             if (isTimedGame) setScore(prev => prev + 1)
-            nextProblem(selected, false);
+           // nextProblem(selected, false);
             setQtExpression(happyExpressions[Math.floor(Math.random() * happyExpressions.length)])
         } else setQtExpression(sadExpressions[Math.floor(Math.random() * sadExpressions.length)]);
 
@@ -175,20 +196,20 @@ export default function App() {
         }
 
         setFeedback(isCorrect ? "TRUE" : "FALSE")
-        setTimeout(() => {
-            setFeedback("")
-            if (!gameEnded) setQtExpression(qtNatural)
-            if (selected === "4") {
-                if (questionCount + 1 >= nbQuestion) {
-                    setGameEnded(true);
-                } else {
-                    //setIdProblem(prev => prev + 1); Ligne qui pose un problème de double refresh Loris :(
-                    setQuestionCount(prev => prev + 1);
-                    setTimer(30);
-                }
-                setTimerPaused(false)
-            }
-        }, 2500)
+        // setTimeout(() => {
+        //     setFeedback("")
+        //     if (!gameEnded) setQtExpression(qtNatural)
+        //     if (selected === "4") {
+        //         if (questionCount + 1 >= nbQuestion) {
+        //             setGameEnded(true);
+        //         } else {
+        //             //if (!isCorrect) setIdProblem(prev => prev + 1);
+        //             setQuestionCount(prev => prev + 1);
+        //             setTimer(30);
+        //         }
+        //         setTimerPaused(false)
+        //     }
+        // }, 2500)
     };
 
     return (
@@ -239,7 +260,8 @@ export default function App() {
                                isTimedGame={isTimedGame}
                                gameEnded={gameEnded}
                                score={score}
-                               nbQuestion={nbQuestion}/>
+                               nbQuestion={nbQuestion}
+                    onSpeechFinished={handleSpeechFinished}/>
 
                     {selected === "4" && !gameEnded && (
                         <div style={{
