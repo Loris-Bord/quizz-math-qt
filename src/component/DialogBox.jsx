@@ -246,39 +246,47 @@ export default function DialogBox({
     }, [problem, goodResponse, badResponse, feedback, isTimedGame, gameEnded, score, nbQuestion]);
 
 
-    return (<div style={{position: "absolute",top:"7vw",left:"14vw"}}>
-        <div style={{
-            position: "relative",
-            background:"white",
-            display:"flex",
-            justifyContent:"center",
-            alignItems:"center",
-            color: "black",
-            fontFamily: "Arial , sans-serif",
-            fontSize:" 22px",
-            fontWeight: "bold",
-            textAlign: "center",
-            padding:" 20px 25px",
-            borderRadius: "50px",
-            width: "25vw",
-            height: "10vw",
+    return (
+        <div style={{ position: "absolute", top: "7vw", left: "14vw" }}>
+            <div style={{
+                position: "relative",
+                background: "white",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                color: "black",
+                fontFamily: "Arial , sans-serif",
+                fontSize: "22px",
+                fontWeight: "bold",
+                textAlign: "center",
+                padding: "20px 25px",
+                borderRadius: "50px",
+                maxWidth: "30vw",
+                minWidth: "30vw",
+                whiteSpace: "pre-wrap",
+                zIndex: 900
             }}>
-                <div>
-                <p>
-            {(isTimedGame && gameEnded) ? `Le jeu est fini, ton score est de : ${score}/${nbQuestion}` : feedback !== "" ? feedback === "TRUE" ? goodResponse : badResponse : problem}
-            </p></div>
-            <div style={{backgroundColor:"white",
-            position:"absolute",
-            left:"15vw",
-            bottom:"-36px",
-            width:"60px",height:"100px",transform: "rotate(-68deg)"
-
-    
-}}></div>
-
-
-
-
+                <div style={{
+                    zIndex:1000
+                }}>
+                    <p>
+                        {(isTimedGame && gameEnded)
+                            ? `Le jeu est fini, ton score est de : ${score}/${nbQuestion}`
+                            : feedback !== ""
+                                ? feedback === "TRUE" ? goodResponse : badResponse
+                                : problem}
+                    </p>
+                </div>
+                <div style={{
+                    backgroundColor: "white",
+                    position: "absolute",
+                    left: "15vw",
+                    bottom: "-36px",
+                    width: "60px",
+                    height: "100px",
+                    transform: "rotate(-68deg)",
+                    zIndex: 1
+                }} />
             </div>
         </div>
     );
