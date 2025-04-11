@@ -56,7 +56,7 @@ Ce projet vise à rendre l’apprentissage des mathématiques plus ludique et ac
 
 Suivez les étapes ci-dessous pour exécuter le projet en local :
 
-1. **Cloner le dépôt :**
+ **Cloner le dépôt (Git doit etre installé en local) :**
 
     git clone https://github.com/Loris-Bord/quizz-math-qt.git
 
