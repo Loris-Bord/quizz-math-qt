@@ -262,7 +262,7 @@ export default function DialogBox({
                 padding: "20px 25px",
                 borderRadius: "50px",
                 width: "25vw",
-                heigth: "10vw",
+                height: "10vw",
                 whiteSpace: "pre-wrap",
                 zIndex: 900
             }}>
