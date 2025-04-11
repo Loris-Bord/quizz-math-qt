@@ -250,6 +250,9 @@ export default function DialogBox({
         <div style={{
             position: "relative",
             background:"white",
+            display:"flex",
+            justifyContent:"center",
+            alignItems:"center",
             color: "black",
             fontFamily: "Arial , sans-serif",
             fontSize:" 22px",
@@ -260,7 +263,10 @@ export default function DialogBox({
             width: "25vw",
             height: "10vw",
             }}>
+                <div>
+                <p>
             {(isTimedGame && gameEnded) ? `Le jeu est fini, ton score est de : ${score}/${nbQuestion}` : feedback !== "" ? feedback === "TRUE" ? goodResponse : badResponse : problem}
+            </p></div>
             <div style={{backgroundColor:"white",
             position:"absolute",
             left:"15vw",
