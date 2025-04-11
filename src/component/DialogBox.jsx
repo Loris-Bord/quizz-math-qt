@@ -250,7 +250,7 @@ export default function DialogBox({
         <div style={{
             position: "relative",
             background:"white",
-            color: "white",
+            color: "black",
             fontFamily: "Arial , sans-serif",
             fontSize:" 22px",
             fontWeight: "bold",
