@@ -36,7 +36,7 @@ Les exercices sont proposés sous deux formes :
 - Reponse libre : on ecrit directement la reponse.
 - Choix multiples : on selectionne la bonne option parmi plusieurs.
 
-Disclaimer: L'application utilise MistraiAI pour générer les questions, les réponses et les feedbacks. De ce fait, il est possible que des comportements inattendus surviennent lors de l'affichage des questions ou des réponses
+Disclaimer: L'application utilise MistralAI pour générer les questions, les réponses et les feedbacks. De ce fait, il est possible que des comportements inattendus surviennent lors de l'affichage des questions ou des réponses
 en raison de l'imprévisibilité du LLM, ce qui ne relève pas d'un problème de l'application.
 Si un tel problème survient, recharger l'activité en cliquant sur l'onglet correspondant peut-etre une solution.
 
