@@ -23,10 +23,6 @@ Voici ce que vous pouvez y faire :
 - Problèmes : des petits problèmes simples pour familiariser les enfants avec des énoncés mathématiques.
 - Jeux chronomètres : parfaits pour tester ses connaissances en un temps limité !
 
-Disclaimer: L'application utilise MistraiAI pour générer les questions, les réponses et les feedbacks. De ce fait, il est possible que des comportements inattendus surviennent lors de l'affichage des questions ou des réponses
-en raison de l'imprévisibilité du LLM, ce qui ne relève pas d'un problème de l'application.
-Si un tel problème survient, recharger l'activité en cliquant sur l'onglet correspondant peut-etre une solution.
-
 ---
 
 ## Comment ça marche ?
@@ -40,7 +36,9 @@ Les exercices sont proposés sous deux formes :
 - Reponse libre : on ecrit directement la reponse.
 - Choix multiples : on selectionne la bonne option parmi plusieurs.
 
-
+Disclaimer: L'application utilise MistraiAI pour générer les questions, les réponses et les feedbacks. De ce fait, il est possible que des comportements inattendus surviennent lors de l'affichage des questions ou des réponses
+en raison de l'imprévisibilité du LLM, ce qui ne relève pas d'un problème de l'application.
+Si un tel problème survient, recharger l'activité en cliquant sur l'onglet correspondant peut-etre une solution.
 
 # Partie Technique
 
