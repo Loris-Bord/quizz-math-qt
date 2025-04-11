@@ -14,7 +14,7 @@ Il suffit de cliquer sur ce lien pour accéder directement au site :
 
 ## Qu’est-ce qu’on y trouve ?
 
-Ce site propose plein d'activités autour des maths, pour apprendre en s'amusant !
+Ce site propose plein d'activités autour des maths de niveau CE2 maximum, pour apprendre en s'amusant !
 
 Voici ce que vous pouvez y faire :
 
@@ -22,6 +22,10 @@ Voici ce que vous pouvez y faire :
 - Géométrie : des exercices pour tester sa connaissance des formes géométriques.
 - Problèmes : des petits problèmes simples pour familiariser les enfants avec des énoncés mathématiques.
 - Jeux chronomètres : parfaits pour tester ses connaissances en un temps limité !
+
+Disclaimer: L'application utilise MistraiAI pour générer les questions, les réponses et les feedbacks. De ce fait, il est possible que des comportements inattendus surviennent lors de l'affichage des questions ou des réponses
+en raison de l'imprévisibilité du LLM, ce qui ne relève pas d'un problème de l'application.
+Si un tel problème survient, recharger l'activité en cliquant sur l'onglet correspondant peut-etre une solution.
 
 ---
 
