@@ -246,24 +246,24 @@ export default function DialogBox({
     }, [problem, goodResponse, badResponse, feedback, isTimedGame, gameEnded, score, nbQuestion]);
 
 
-    return (<div style={{position: "relative"}}>
+    return (<div style={{position: "absolute",top:"7vw",left:"14vw"}}>
         <div style={{
             position: "relative",
-            background: "white",
-            color: "black",
+            background:"white",
+            color: "white",
             fontFamily: "Arial , sans-serif",
             fontSize:" 22px",
             fontWeight: "bold",
             textAlign: "center",
             padding:" 20px 25px",
             borderRadius: "50px",
-            width: "450px",
-            height: "175px",
-            backgroundColor:"black"}}>
+            width: "25vw",
+            height: "10vw",
+            }}>
             {(isTimedGame && gameEnded) ? `Le jeu est fini, ton score est de : ${score}/${nbQuestion}` : feedback !== "" ? feedback === "TRUE" ? goodResponse : badResponse : problem}
-            <div style={{backgroundColor:"black",
+            <div style={{backgroundColor:"white",
             position:"absolute",
-            left:"320px",
+            left:"15vw",
             bottom:"-36px",
             width:"60px",height:"100px",transform: "rotate(-68deg)"
 
