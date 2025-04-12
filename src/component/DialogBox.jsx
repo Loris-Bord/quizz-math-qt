@@ -104,7 +104,6 @@ export default function DialogBox({
                                       score,
                                       nbQuestion,
                                       onSpeechFinished
-
                                   }) {
     const [problem, setProblem] = useState("");
     const [goodResponse, setGoodResponse] = useState("");
@@ -122,7 +121,7 @@ export default function DialogBox({
     const chatHistory = useRef([
         {
             role: "system",
-            content: "Tu es un générateur d'exercices pour des enfants de CE2. Ne répète jamais un problème déjà généré."
+            content: "Tu es un générateur d'exercices pour des enfants de CE2. Ne répète jamais un problème déjà généré. Les exercices générés doivent être très facile."
         }
     ]);
 
@@ -168,6 +167,8 @@ export default function DialogBox({
                 role: "assistant",
                 content: generatedText
             });
+
+            console.log(`Réponse : \n ${generatedText}`)
 
             const lignes = generatedText
                 .split('\n')
@@ -233,10 +234,8 @@ export default function DialogBox({
 
             utterance.onend = () => {
                 if (feedback !== "") {
-                    setTimeout(() => {
-                        setResponseRobotFinished(true);
-                        onSpeechFinished()
-                    }, 300);
+                    setProblem("...")
+                    onSpeechFinished()
                 }
             };
 
