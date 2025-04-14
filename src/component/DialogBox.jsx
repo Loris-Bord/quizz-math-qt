@@ -234,7 +234,7 @@ export default function DialogBox({
 
             utterance.onend = () => {
                 if (feedback !== "") {
-                    setProblem("...")
+                    if (feedback === "TRUE") setProblem("...")
                     onSpeechFinished()
                 }
             };
